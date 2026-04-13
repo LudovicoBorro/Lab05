@@ -1,6 +1,5 @@
 import flet as ft
-from flet_core import MainAxisAlignment
-
+from flet import MainAxisAlignment
 
 class View(ft.UserControl):
     def __init__(self, page: ft.Page):
@@ -22,13 +21,12 @@ class View(ft.UserControl):
         self._btnCercaStudente = None
         self._btnCercaCorsi = None
         self._btnIscrivi = None
-        self._list_view = None
 
     def load_interface(self):
         """Function that loads the graphical elements of the view"""
         # title
         self._title = ft.Text(value="App Gestione Studenti", text_align=ft.TextAlign.CENTER, color="blue", size=24)
-        self._page.controls.append(self._title)
+        self._page.add(self._title)
 
         #ROW with some controls
         self._ddCorso = ft.Dropdown(label="Corso", width=1000)
@@ -37,9 +35,9 @@ class View(ft.UserControl):
 
         row1 = ft.Row(controls=[self._ddCorso, self._btnCercaIscritti], alignment=MainAxisAlignment.CENTER)
 
-        self._txtMatricola = ft.TextField(key="Matricola", hint_text="Matricola", width=300)
-        self._txtNome = ft.TextField(key="Nome", hint_text="Nome", width=400, read_only=True)
-        self._txtCognome = ft.TextField(key="Cognome", hint_text="Cognome", width=400, read_only=True)
+        self._txtMatricola = ft.TextField(label="Matricola", hint_text="Matricola", width=300)
+        self._txtNome = ft.TextField(label="Nome", hint_text="Nome", width=400, read_only=True)
+        self._txtCognome = ft.TextField(label="Cognome", hint_text="Cognome", width=400, read_only=True)
 
         row2 = ft.Row(controls=[self._txtMatricola, self._txtNome, self._txtCognome], alignment=MainAxisAlignment.CENTER)
 
@@ -53,7 +51,8 @@ class View(ft.UserControl):
         # text field for the name
 
         # List View where the reply is printed
-
+        self._list_view = ft.ListView(expand=1,spacing=10,padding=20,auto_scroll=True)
+        self._page.controls.append(self._list_view)
         self.update_page()
 
     @property
