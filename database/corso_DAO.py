@@ -29,3 +29,23 @@ class DAO:
         cnx.close()
         return res
 
+    @staticmethod
+    def getCorsiStudente(matricola):
+        cnx = DBConnect.get_connection()
+        cursor = cnx.cursor(dictionary=True)
+
+        query = """
+            select c.*
+            from corso c, iscrizione i 
+            where c.codins = i.codins and i.matricola = %s      
+        """
+
+        cursor.execute(query, (matricola,))
+
+        res = []
+        for row in cursor:
+            res.append(Corso(**row))
+
+        cursor.close()
+        cnx.close()
+        return res

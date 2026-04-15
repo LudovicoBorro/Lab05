@@ -42,28 +42,14 @@ class Controller:
 
         matricola = self._view._txtMatricola.value
 
-        if matricola is None:
-            self._view.create_alert("Inserire una matricola!")
-            self._view.update_page()
+        if not self._check_corsi(matricola):
             return
 
-        try:
-            matricola = int(matricola)
-        except ValueError:
-            self._view.create_alert("Attenzione! Inserire una matricola valida!")
-            self._view.update_page()
-            return
+        matricola = int(matricola)
 
-        studente = self._model.getStudente(matricola=matricola)
+        studente = self._model.getStudente(matricola)
 
-        if len(studente) == 0:
-            self._view.create_alert("Matricola non esistente!")
-            self._view.update_page()
-            return
-
-        if len(studente) > 1:
-            self._view.create_alert("Errore! Trovati più studenti con la stessa matricola!")
-            self._view.update_page()
+        if not self._check_studente(studente):
             return
 
         self._view._txtNome.value = studente[0].nome
@@ -71,10 +57,57 @@ class Controller:
         self._view.update_page()
 
     def handleCercaCorsi(self, e):
-        pass
+        self._view._list_view.controls.clear()
+
+        matricola = self._view._txtMatricola.value
+
+        if not self._check_matricola(matricola):
+            return
+
+        matricola = int(matricola)
+
+        corsi = self._model.getCorsiStudente(matricola)
+
+        if not self._check_corsi(corsi):
+            return
+
+        self._view._list_view.controls.append(
+            ft.Text(f"Risultano {len(corsi)} corsi:")
+        )
+
+        for c in corsi:
+            self._view._list_view.controls.append(
+                ft.Text(c)
+            )
+
+        self._view.update_page()
 
     def handleIscrivi(self, e):
-        pass
+        self._view._list_view.controls.clear()
+
+        matricola = self._view._txtMatricola.value
+        cod_corso = self._view._ddCorso.value
+
+        if not self._check_matricola(matricola):
+            return
+
+        matricola = int(matricola)
+
+        if cod_corso is None:
+            self._view.create_alert("Selezionare un corso!")
+            self._view.update_page()
+            return
+
+        if self._model.insertIscrizione(matricola, cod_corso):
+            self._view._list_view.controls.append(
+                ft.Text("Iscrizione avvenuta con successo!", color="green")
+            )
+        else:
+            self._view._list_view.controls.append(
+                ft.Text("L'iscrizione non è andata a buon fine!", color="red")
+            )
+
+        self._view.update_page()
 
     def fillddCorsi(self):
         for corso in self._model.getAllCorsi():
@@ -82,3 +115,42 @@ class Controller:
                 ft.dropdown.Option(key=corso.codins, text=corso.__str__())
             )
             self._corsi[corso.codins] = corso
+
+    def _check_matricola(self, matricola):
+
+        if matricola is None:
+            self._view.create_alert("Inserire una matricola!")
+            self._view.update_page()
+            return False
+
+        try:
+            matricola = int(matricola)
+        except ValueError:
+            self._view.create_alert("Attenzione! Inserire una matricola valida!")
+            self._view.update_page()
+            return False
+
+        return True
+
+    def _check_studente(self, studente):
+
+        if len(studente) == 0:
+            self._view.create_alert("Matricola non esistente!")
+            self._view.update_page()
+            return False
+
+        if len(studente) > 1:
+            self._view.create_alert("Errore! Trovati più studenti con la stessa matricola!")
+            self._view.update_page()
+            return False
+
+        return True
+
+    def _check_corsi(self, corsi):
+
+        if len(corsi) == 0:
+            self._view.create_alert("Lo studente inserito non è iscritto a nessun corso")
+            self._view.update_page()
+            return False
+
+        return True

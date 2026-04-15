@@ -21,6 +21,7 @@ class View(ft.UserControl):
         self._btnCercaStudente = None
         self._btnCercaCorsi = None
         self._btnIscrivi = None
+        self._list_view = None
 
     def load_interface(self):
         """Function that loads the graphical elements of the view"""
